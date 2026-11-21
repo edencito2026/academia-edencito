@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academia Edencito</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body { margin: 0; background: #0f172a; color: #f8fafc; }
+    header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #1e293b; border-bottom: 1px solid #334155; }
+    .logo { font-size: 1.4rem; font-weight: bold; color: #38bdf8; }
+    button { background: #38bdf8; color: #0f172a; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #0284c7; color: white; }
+    .btn-ws { background: #22c55e; color: #052e16; width: 100%; }
+    .btn-ws:hover { background: #16a34a; color: white; }
+    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+    .card { background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155; display: flex; flex-direction: column; }
+    .card img { width: 100%; height: 170px; object-fit: cover; background: #334155; }
+    .card-body { padding: 1.2rem; flex: 1; display: flex; flex-direction: column; }
+    .price { color: #4ade80; font-size: 1.2rem; font-weight: bold; margin: 0.5rem 0 1rem; }
+    /* Modal de Login */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); justify-content: center; align-items: center; }
+    .modal-box { background: #1e293b; padding: 2rem; border-radius: 10px; width: 90%; max-width: 380px; border: 1px solid #334155; }
+    input { width: 100%; padding: 0.7rem; margin: 0.5rem 0 1rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; }
+    .link { color: #38bdf8; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Academia Edencito</div>
+  <div id="nav-actions">
+    <button onclick="abrirModal()">Acceso Alumnos</button>
+  </div>
+</header>
+
+<div class="container">
+  <h1>Cursos Disponibles</h1>
+  <p style="color: #94a3b8;">Aprende a tu ritmo con acceso de por vida.</p>
+  <div id="catalogo" class="grid">Cargando cursos...</div>
+</div>
+
+<!-- Modal Login / Registro -->
+<div id="authModal" class="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">Iniciar Sesión</h2>
+    <input type="email" id="email" placeholder="Tu correo electrónico">
+    <input type="password" id="password" placeholder="Tu contraseña (mín. 6 caracteres)">
+    <button style="width:100%" onclick="procesarAuth()" id="btnSubmit">Entrar</button>
+    <p style="text-align:center; margin-top:1rem;">
+      <span class="link" onclick="cambiarModo()" id="toggleText">¿No tienes cuenta? Regístrate gratis</span>
+    </p>
+    <p style="text-align:center;"><span class="link" style="color:#94a3b8" onclick="cerrarModal()">Cancelar</span></p>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+  let esRegistro = false;
+
+  // Verificar si ya inició sesión
+  _supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      document.getElementById('nav-actions').innerHTML = `<button onclick="location.href='aula.html'">Ir a Mis Cursos</button>`;
+    }
+  });
+
+  // Cargar catálogo público
+  async function cargarCatalogo() {
+    const { data: cursos, error } = await _supabase.from('cursos').select('*');
+    const contenedor = document.getElementById('catalogo');
+
+    if (error) {
+      contenedor.innerHTML = `<p style="color:#f87171;">Error al cargar cursos: ${error.message}</p>`;
+      return;
+    }
+
+    if (!cursos || cursos.length === 0) {
+      contenedor.innerHTML = "<p>Aún no hay cursos publicados.</p>";
+      return;
+    }
+
+    contenedor.innerHTML = cursos.map(c => {
+      const mensajeWs = encodeURIComponent(`Hola, quiero inscribirme en el curso "${c.titulo}".`);
+      const linkWs = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensajeWs}`;
+      return `
+        <div class="card">
+          <img src="${c.imagen_url || 'https://placehold.co/600x400/1e293b/38bdf8?text=Curso'}" alt="${c.titulo}">
+          <div class="card-body">
+            <h3>${c.titulo}</h3>
+            <p style="color:#cbd5e1; font-size:0.95rem; flex:1">${c.descripcion || ''}</p>
+            <div class="price">${c.precio || 'Consultar'}</div>
+            <button class="btn-ws" onclick="window.open('${linkWs}', '_blank')">Inscribirme por WhatsApp</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function abrirModal() { document.getElementById('authModal').style.display = 'flex'; }
+  function cerrarModal() { document.getElementById('authModal').style.display = 'none'; }
+
+  function cambiarModo() {
+    esRegistro = !esRegistro;
+    document.getElementById('modalTitle').innerText = esRegistro ? 'Crear Cuenta' : 'Iniciar Sesión';
+    document.getElementById('btnSubmit').innerText = esRegistro ? 'Registrarme' : 'Entrar';
+    document.getElementById('toggleText').innerText = esRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis';
+  }
+
+  async function procesarAuth() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) {
+      alert("Ingresa tu correo y contraseña.");
+      return;
+    }
+
+    if (esRegistro) {
+      const { error } = await _supabase.auth.signUp({ email, password });
+      if (error) alert(error.message);
+      else {
+        alert("¡Cuenta creada! Revisa tu correo para confirmarla (o intenta iniciar sesión).");
+        cambiarModo();
+      }
+    } else {
+      const { error } = await _supabase.auth.signInWithPassword({ email, password });
+      if (error) alert("Error: " + error.message);
+      else window.location.href = 'aula.html';
+    }
+  }
+
+  cargarCatalogo();
+</script>
+</body>
+</html>
