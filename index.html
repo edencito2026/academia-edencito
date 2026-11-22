@@ -3,136 +3,502 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Academia Edencito</title>
+  <title>I3E Academy | Ingeniería Estructural y Mecánica Computacional</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body { margin: 0; background: #0f172a; color: #f8fafc; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 5%; background: #1e293b; border-bottom: 1px solid #334155; }
-    .logo { font-size: 1.4rem; font-weight: bold; color: #38bdf8; }
-    button { background: #38bdf8; color: #0f172a; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    button:hover { background: #0284c7; color: white; }
-    .btn-ws { background: #22c55e; color: #052e16; width: 100%; }
-    .btn-ws:hover { background: #16a34a; color: white; }
-    .container { max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
-    .card { background: #1e293b; border-radius: 10px; overflow: hidden; border: 1px solid #334155; display: flex; flex-direction: column; }
-    .card img { width: 100%; height: 170px; object-fit: cover; background: #334155; }
-    .card-body { padding: 1.2rem; flex: 1; display: flex; flex-direction: column; }
-    .price { color: #4ade80; font-size: 1.2rem; font-weight: bold; margin: 0.5rem 0 1rem; }
-    /* Modal de Login */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); justify-content: center; align-items: center; }
-    .modal-box { background: #1e293b; padding: 2rem; border-radius: 10px; width: 90%; max-width: 380px; border: 1px solid #334155; }
-    input { width: 100%; padding: 0.7rem; margin: 0.5rem 0 1rem; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; }
-    .link { color: #38bdf8; cursor: pointer; font-size: 0.9rem; text-decoration: underline; }
+    :root {
+      --bg-dark: #0b1120;
+      --bg-card: #131c31;
+      --bg-card-hover: #192540;
+      --primary: #38bdf8;
+      --primary-dark: #0284c7;
+      --accent-gold: #f59e0b;
+      --whatsapp: #22c55e;
+      --whatsapp-dark: #16a34a;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #1e293b;
+      --border-light: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    html { scroll-behavior: smooth; }
+    body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+
+    /* Navbar */
+    header {
+      background: rgba(11, 17, 32, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .logo span { color: var(--primary); }
+    .nav-links { display: flex; gap: 1.8rem; align-items: center; }
+    .nav-links a.link { color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: 0.2s; }
+    .nav-links a.link:hover { color: var(--primary); }
+    .btn-login {
+      background: var(--primary);
+      color: #0b1120;
+      padding: 0.55rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-login:hover { background: #7dd3fc; transform: translateY(-1px); }
+
+    /* Hero Section con retícula técnica */
+    .hero {
+      padding: 5rem 5% 4rem;
+      text-align: center;
+      background-color: var(--bg-dark);
+      background-image:
+        linear-gradient(to right, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(56, 189, 248, 0.04) 1px, transparent 1px),
+        radial-gradient(circle at top, #172554 0%, #0b1120 68%);
+      background-size: 36px 36px, 36px 36px, 100% 100%;
+      border-bottom: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.12);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 0.38rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 1.3rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4.2vw, 3.2rem);
+      max-width: 860px;
+      margin: 0 auto 1.1rem;
+      line-height: 1.18;
+      font-weight: 800;
+    }
+    .hero h1 span { color: var(--primary); }
+    .hero p {
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 2.2rem;
+      font-size: 1.1rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--primary);
+      color: #0b1120;
+      padding: 0.85rem 1.9rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-primary:hover { background: #7dd3fc; }
+    .btn-outline {
+      border: 1px solid var(--border-light);
+      color: var(--text-main);
+      padding: 0.85rem 1.9rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      background: rgba(19, 28, 49, 0.8);
+      transition: 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Pilares */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      max-width: 1120px;
+      margin: 3.5rem auto;
+      padding: 0 5%;
+    }
+    .feature-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--primary);
+      padding: 1.6rem;
+      border-radius: 12px;
+    }
+    .feature-box h3 { color: var(--text-main); font-size: 1.08rem; margin-bottom: 0.45rem; }
+    .feature-box p { color: var(--text-muted); font-size: 0.92rem; }
+
+    /* Catálogo */
+    .section { max-width: 1120px; margin: 4.5rem auto; padding: 0 5%; }
+    .section-header { margin-bottom: 2.2rem; }
+    .section-header h2 { font-size: 2rem; font-weight: 800; margin-bottom: 0.35rem; }
+    .section-header p { color: var(--text-muted); }
+
+    .grid-cursos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.8rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 28px rgba(2, 132, 199, 0.14);
+    }
+    .card-img {
+      width: 100%;
+      height: 185px;
+      object-fit: cover;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+    .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text-main); }
+    .card-desc { color: var(--text-muted); font-size: 0.94rem; margin-bottom: 1.3rem; flex: 1; }
+    .card-price { font-size: 1.55rem; font-weight: 800; color: var(--whatsapp); margin-bottom: 1rem; }
+
+    .card-buttons { display: flex; flex-direction: column; gap: 0.65rem; }
+    .btn-temario {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      padding: 0.65rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-temario:hover { background: rgba(56, 189, 248, 0.12); }
+    .btn-wsp {
+      background: var(--whatsapp);
+      color: #052e16;
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-wsp:hover { background: var(--whatsapp-dark); color: #fff; }
+
+    /* Instructor */
+    .instructor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.4rem;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 2.2rem;
+      align-items: center;
+    }
+    .instructor-badge-box {
+      background: linear-gradient(145deg, #0f172a, #172554);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 14px;
+      height: 230px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.2rem;
+    }
+    .instructor-badge-box .monogram {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+    .instructor-badge-box .uni-tag {
+      margin-top: 0.6rem;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 0.25rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .instructor-info h3 { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.25rem; }
+    .instructor-role {
+      color: var(--accent-gold);
+      font-weight: 600;
+      font-size: 0.98rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .instructor-info p { color: var(--text-muted); margin-bottom: 0.9rem; font-size: 0.97rem; }
+
+    /* Modal Temario */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.82);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      max-width: 580px;
+      width: 100%;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 1.15rem; color: var(--primary); }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text-main); }
+    .modal-body { padding: 1.5rem; overflow-y: auto; }
+    .leccion-item {
+      padding: 0.8rem 1rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.6rem;
+      display: flex;
+      gap: 0.85rem;
+      align-items: center;
+    }
+    .leccion-num { color: var(--accent-gold); font-weight: 700; font-size: 0.9rem; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2.2rem 5%;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 4.5rem;
+    }
+
+    @media (max-width: 760px) {
+      .instructor-card { grid-template-columns: 1fr; }
+      .instructor-badge-box { height: 150px; }
+      .nav-links a.link { display: none; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">Academia Edencito</div>
-  <div id="nav-actions">
-    <button onclick="abrirModal()">Acceso Alumnos</button>
+  <header>
+    <a href="#" class="logo"><span>I3E</span> Academy</a>
+    <nav class="nav-links">
+      <a href="#cursos" class="link">Cursos</a>
+      <a href="#instructor" class="link">Director Académico</a>
+      <a href="aula.html" class="btn-login">Acceso Alumnos</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <span class="badge">Investigación y Actualización en Ingeniería</span>
+    <h1>Especialización en <span>Mecánica Computacional</span> y Diseño Estructural</h1>
+    <p>Formación técnica rigurosa desde los fundamentos teóricos hasta la implementación numérica y normativa vigente. Aprende a tu ritmo con acceso de por vida.</p>
+    <div class="hero-actions">
+      <a href="#cursos" class="btn-primary">Ver Programas Disponibles</a>
+      <a id="btn-hero-wsp" href="#" target="_blank" class="btn-outline">Consultar por WhatsApp</a>
+    </div>
+  </section>
+
+  <div class="features">
+    <div class="feature-box">
+      <h3>Rigor Teórico y Numérico</h3>
+      <p>Desarrollo paso a paso de formulaciones matriciales, elementos finitos y criterios de diseño estructural.</p>
+    </div>
+    <div class="feature-box">
+      <h3>Herramientas y Plantillas</h3>
+      <p>Acceso a apuntes técnicos en PDF, hojas de cálculo programadas y modelos listos para aplicar.</p>
+    </div>
+    <div class="feature-box">
+      <h3>Acceso de por Vida</h3>
+      <p>Un único pago te otorga ingreso permanente a las clases grabadas y a futuras actualizaciones del curso.</p>
+    </div>
   </div>
-</header>
 
-<div class="container">
-  <h1>Cursos Disponibles</h1>
-  <p style="color: #94a3b8;">Aprende a tu ritmo con acceso de por vida.</p>
-  <div id="catalogo" class="grid">Cargando cursos...</div>
-</div>
+  <section id="cursos" class="section">
+    <div class="section-header">
+      <h2>Cursos Disponibles</h2>
+      <p>Revisa el temario detallado de cada programa o solicita tu inscripción directa.</p>
+    </div>
+    <div id="lista-cursos" class="grid-cursos">
+      <p style="color: var(--text-muted);">Cargando catálogo de cursos...</p>
+    </div>
+  </section>
 
-<!-- Modal Login / Registro -->
-<div id="authModal" class="modal">
-  <div class="modal-box">
-    <h2 id="modalTitle">Iniciar Sesión</h2>
-    <input type="email" id="email" placeholder="Tu correo electrónico">
-    <input type="password" id="password" placeholder="Tu contraseña (mín. 6 caracteres)">
-    <button style="width:100%" onclick="procesarAuth()" id="btnSubmit">Entrar</button>
-    <p style="text-align:center; margin-top:1rem;">
-      <span class="link" onclick="cambiarModo()" id="toggleText">¿No tienes cuenta? Regístrate gratis</span>
-    </p>
-    <p style="text-align:center;"><span class="link" style="color:#94a3b8" onclick="cerrarModal()">Cancelar</span></p>
+  <section id="instructor" class="section">
+    <div class="instructor-card">
+      <div class="instructor-badge-box">
+        <span class="monogram">I3E</span>
+        <small style="color: var(--text-muted); margin-top: 0.2rem;">Ingeniería Estructural</small>
+        <span class="uni-tag">FIC — UNI</span>
+      </div>
+      <div class="instructor-info">
+        <h3>Ing. Eden A. Capcha</h3>
+        <span class="instructor-role">Ingeniero Civil — Maestro en Ingeniería Estructural (UNI)</span>
+        <p>Egresado de la Facultad de Ingeniería Civil de la Universidad Nacional de Ingeniería (UNI), con amplia experiencia en el campo de la mecánica computacional y el diseño de estructuras.</p>
+        <p style="margin-bottom: 0;">A través de <strong>I3E Academy</strong>, impulsa la investigación y actualización continua en ingeniería, brindando cursos diseñados para dominar el comportamiento estructural y las herramientas computacionales con criterio profesional.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal para ver el temario -->
+  <div id="modal-temario" class="modal-overlay" onclick="cerrarModal(event)">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-titulo">Temario del Curso</h3>
+        <button class="modal-close" onclick="document.getElementById('modal-temario').style.display='none'">&times;</button>
+      </div>
+      <div id="modal-contenido" class="modal-body">
+        Cargando lecciones...
+      </div>
+    </div>
   </div>
-</div>
 
-<script src="config.js"></script>
-<script>
-  let esRegistro = false;
+  <footer>
+    <p>&copy; 2026 I3E Academy — Investigación y Actualización en Ingeniería. Todos los derechos reservados.</p>
+  </footer>
 
-  // Verificar si ya inició sesión
-  _supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      document.getElementById('nav-actions').innerHTML = `<button onclick="location.href='aula.html'">Ir a Mis Cursos</button>`;
-    }
-  });
+  <script>
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // Cargar catálogo público
-  async function cargarCatalogo() {
-    const { data: cursos, error } = await _supabase.from('cursos').select('*');
-    const contenedor = document.getElementById('catalogo');
+    document.getElementById('btn-hero-wsp').href =
+      `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola Ing. Eden, quisiera información sobre los cursos de I3E Academy.')}`;
 
-    if (error) {
-      contenedor.innerHTML = `<p style="color:#f87171;">Error al cargar cursos: ${error.message}</p>`;
-      return;
-    }
+    async function cargarCursos() {
+      const contenedor = document.getElementById('lista-cursos');
+      const { data: cursos, error } = await supabaseClient
+        .from('cursos')
+        .select('*')
+        .order('id', { ascending: true });
 
-    if (!cursos || cursos.length === 0) {
-      contenedor.innerHTML = "<p>Aún no hay cursos publicados.</p>";
-      return;
-    }
-
-    contenedor.innerHTML = cursos.map(c => {
-      const mensajeWs = encodeURIComponent(`Hola, quiero inscribirme en el curso "${c.titulo}".`);
-      const linkWs = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensajeWs}`;
-      return `
-        <div class="card">
-          <img src="${c.imagen_url || 'https://placehold.co/600x400/1e293b/38bdf8?text=Curso'}" alt="${c.titulo}">
-          <div class="card-body">
-            <h3>${c.titulo}</h3>
-            <p style="color:#cbd5e1; font-size:0.95rem; flex:1">${c.descripcion || ''}</p>
-            <div class="price">${c.precio || 'Consultar'}</div>
-            <button class="btn-ws" onclick="window.open('${linkWs}', '_blank')">Inscribirme por WhatsApp</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  function abrirModal() { document.getElementById('authModal').style.display = 'flex'; }
-  function cerrarModal() { document.getElementById('authModal').style.display = 'none'; }
-
-  function cambiarModo() {
-    esRegistro = !esRegistro;
-    document.getElementById('modalTitle').innerText = esRegistro ? 'Crear Cuenta' : 'Iniciar Sesión';
-    document.getElementById('btnSubmit').innerText = esRegistro ? 'Registrarme' : 'Entrar';
-    document.getElementById('toggleText').innerText = esRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate gratis';
-  }
-
-  async function procesarAuth() {
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value;
-
-    if (!email || !password) {
-      alert("Ingresa tu correo y contraseña.");
-      return;
-    }
-
-    if (esRegistro) {
-      const { error } = await _supabase.auth.signUp({ email, password });
-      if (error) alert(error.message);
-      else {
-        alert("¡Cuenta creada! Revisa tu correo para confirmarla (o intenta iniciar sesión).");
-        cambiarModo();
+      if (error) {
+        contenedor.innerHTML = `<p style="color:#f87171;">Error al cargar cursos: ${error.message}</p>`;
+        return;
       }
-    } else {
-      const { error } = await _supabase.auth.signInWithPassword({ email, password });
-      if (error) alert("Error: " + error.message);
-      else window.location.href = 'aula.html';
-    }
-  }
 
-  cargarCatalogo();
-</script>
+      if (!cursos || cursos.length === 0) {
+        contenedor.innerHTML = `<p style="color: var(--text-muted);">Próximamente nuevos cursos disponibles.</p>`;
+        return;
+      }
+
+      contenedor.innerHTML = cursos.map(curso => {
+        const mensajeWsp = encodeURIComponent(`Hola, me interesa inscribirme al curso "${curso.titulo}" (S/ ${curso.precio}) en I3E Academy.`);
+        const urlWsp = `https://wa.me/${WHATSAPP_NUMERO}?text=${mensajeWsp}`;
+        const imagenHtml = curso.imagen_url
+          ? `<img src="${curso.imagen_url}" alt="${curso.titulo}" class="card-img">`
+          : `<div class="card-img">I3E</div>`;
+
+        return `
+          <div class="card">
+            ${imagenHtml}
+            <div class="card-body">
+              <h3 class="card-title">${curso.titulo}</h3>
+              <p class="card-desc">${curso.descripcion || ''}</p>
+              <div class="card-price">S/ ${curso.precio}</div>
+              <div class="card-buttons">
+                <button class="btn-temario" data-id="${curso.id}" data-titulo="${encodeURIComponent(curso.titulo)}" onclick="verTemarioBtn(this)">
+                  Ver Temario
+                </button>
+                <a href="${urlWsp}" target="_blank" class="btn-wsp">
+                  Inscribirme por WhatsApp
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function verTemarioBtn(btn) {
+      const cursoId = btn.getAttribute('data-id');
+      const tituloCurso = decodeURIComponent(btn.getAttribute('data-titulo'));
+
+      const modal = document.getElementById('modal-temario');
+      const titulo = document.getElementById('modal-titulo');
+      const contenido = document.getElementById('modal-contenido');
+
+      titulo.textContent = `Temario: ${tituloCurso}`;
+      contenido.innerHTML = `<p style="color: var(--text-muted);">Cargando clases...</p>`;
+      modal.style.display = 'flex';
+
+      const { data: lecciones, error } = await supabaseClient
+        .from('lecciones')
+        .select('titulo, orden')
+        .eq('curso_id', cursoId)
+        .order('orden', { ascending: true });
+
+      if (error || !lecciones || lecciones.length === 0) {
+        contenido.innerHTML = `<p style="color: var(--text-muted);">El temario detallado se está actualizando. Escríbenos por WhatsApp para enviarte el brochure completo.</p>`;
+        return;
+      }
+
+      contenido.innerHTML = lecciones.map((lec, idx) => `
+        <div class="leccion-item">
+          <span class="leccion-num">${String(lec.orden || idx + 1).padStart(2, '0')}</span>
+          <span>${lec.titulo}</span>
+        </div>
+      `).join('');
+    }
+
+    function cerrarModal(e) {
+      if (e.target.id === 'modal-temario') {
+        e.target.style.display = 'none';
+      }
+    }
+
+    cargarCursos();
+  </script>
 </body>
 </html>
