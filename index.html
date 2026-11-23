@@ -411,7 +411,7 @@
   </footer>
 
   <script>
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     document.getElementById('btn-hero-wsp').href =
       `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent('Hola Ing. Eden, quisiera información sobre los cursos de I3E Academy.')}`;
